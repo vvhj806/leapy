@@ -92,7 +92,7 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  apps/client:
+  apps/user-app:
     dependencies:
       next:
         specifier: 16.2.4
