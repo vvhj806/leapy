@@ -72,11 +72,19 @@ const shellCopy = {
     badge: "학생 · 학부모",
     description: "오늘의 학원 생활을 한눈에 확인하세요.",
     initials: "사용",
+    headerDescription: "오늘의 학원 생활을 한눈에 확인하세요.",
+    sidebarLabel: "오늘 수업",
+    sidebarValue: "오후 4:00",
+    sidebarDetail: "중등 수학 · 3강의실",
   },
   teacher: {
     badge: "선생님",
     description: "수업과 학생 관리를 빠르게 처리하세요.",
     initials: "선생",
+    headerDescription: "수업과 처리할 업무를 빠르게 확인하세요.",
+    sidebarLabel: "다음 수업",
+    sidebarValue: "오후 2:30",
+    sidebarDetail: "중등 수학 A반 · 12명",
   },
 } satisfies Record<AppKind, Record<string, string>>;
 
@@ -128,9 +136,10 @@ export function AppShell({
   const activeItem = items.find((item) => isActive(pathname, item.href));
   const mobileItems = items.slice(0, 4);
   const overflowItems = items.slice(4);
+  const isDashboard = pathname === items[0].href;
 
   return (
-    <div className="min-h-dvh bg-muted/35">
+    <div className="min-h-dvh bg-gray-50">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r bg-background/95 px-4 py-5 backdrop-blur md:flex md:flex-col">
         <Link href={items[0].href} className="flex items-center gap-3 px-2">
           <span className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
@@ -161,60 +170,89 @@ export function AppShell({
           ))}
         </nav>
 
-        <div className="mt-auto rounded-2xl border bg-card p-4 shadow-sm">
-          <BookOpen className="mb-3 size-5 text-primary" aria-hidden="true" />
-          <p className="text-sm font-medium">Leapy와 함께</p>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            {copy.description}
+        <div className="mt-auto rounded-2xl border border-primary-100 bg-primary-50/70 p-4 shadow-sm">
+          <div className="flex items-center gap-2 text-primary-700">
+            <BookOpen className="size-4" aria-hidden="true" />
+            <p className="text-xs font-semibold">{copy.sidebarLabel}</p>
+          </div>
+          <p className="mt-3 text-lg font-bold text-gray-900">
+            {copy.sidebarValue}
+          </p>
+          <p className="mt-1 truncate text-xs text-gray-600">
+            {copy.sidebarDetail}
           </p>
         </div>
       </aside>
 
       <div className="md:pl-64">
         <header className="sticky top-0 z-20 border-b bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-            <div>
-              <p className="text-xs font-medium text-primary md:hidden">
-                Leapy
-              </p>
-              <h1 className="font-semibold tracking-tight">
-                {activeItem?.label ?? "홈"}
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+            <div className="min-w-0">
+              <h1 className="truncate font-semibold tracking-tight text-gray-900">
+                <span className="md:hidden">
+                  {isDashboard ? "Leapy" : (activeItem?.label ?? "홈")}
+                </span>
+                <span className="hidden md:inline">
+                  {activeItem?.label ?? "홈"}
+                </span>
               </h1>
+              {isDashboard ? (
+                <p className="mt-0.5 hidden text-xs text-gray-500 md:block">
+                  {copy.headerDescription}
+                </p>
+              ) : null}
             </div>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    className="h-10 gap-2 rounded-full px-2"
-                  />
-                }
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                aria-label="알림 확인"
+                className="relative rounded-xl text-gray-600 hover:bg-primary-50 hover:text-primary-700"
               >
-                <Avatar className="size-8">
-                  <AvatarFallback className="bg-primary/10 text-xs text-primary">
-                    {copy.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <ChevronDown className="hidden size-4 text-muted-foreground sm:block" />
-                <span className="sr-only">사용자 메뉴 열기</span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>{copy.badge}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  render={<Link href={items.at(-1)?.href ?? items[0].href} />}
+                <Bell className="size-5" aria-hidden="true" />
+                <span className="absolute top-2 right-2 size-2 rounded-full border-2 border-background bg-red-500" />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <Button
+                      variant="ghost"
+                      className="h-10 gap-2 rounded-full px-2"
+                    />
+                  }
                 >
-                  <Settings className="size-4" aria-hidden="true" />
-                  설정
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <Avatar className="size-8">
+                    <AvatarFallback className="bg-primary/10 text-xs text-primary">
+                      {copy.initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <ChevronDown className="hidden size-4 text-muted-foreground sm:block" />
+                  <span className="sr-only">사용자 메뉴 열기</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuLabel>{copy.badge}</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    render={<Link href={items.at(-1)?.href ?? items[0].href} />}
+                  >
+                    <Settings className="size-4" aria-hidden="true" />
+                    설정
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </header>
 
         <div className="mx-auto max-w-6xl px-4 py-5 pb-28 sm:px-6 md:py-8 md:pb-8">
-          <div className="min-h-[calc(100dvh-8rem)] rounded-3xl border bg-card p-5 shadow-sm sm:p-7 [&>main]:text-xl [&>main]:font-semibold">
+          <div
+            className={cn(
+              isDashboard
+                ? ""
+                : "min-h-[calc(100dvh-8rem)] rounded-3xl border bg-card p-5 shadow-sm sm:p-7 [&>main]:text-xl [&>main]:font-semibold",
+            )}
+          >
             {children}
           </div>
         </div>
