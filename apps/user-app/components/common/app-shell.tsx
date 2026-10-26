@@ -45,6 +45,7 @@ type AppKind = "user" | "teacher";
 type NavigationItem = {
   href: string;
   label: string;
+  mobileLabel?: string;
   icon: LucideIcon;
 };
 
@@ -59,8 +60,18 @@ const navigation: Record<AppKind, NavigationItem[]> = {
   ],
   teacher: [
     { href: "/teacher", label: "홈", icon: Home },
-    { href: "/teacher/attendance", label: "출결 관리", icon: CheckCircle2 },
-    { href: "/teacher/classes", label: "반 관리", icon: Users },
+    {
+      href: "/teacher/attendance",
+      label: "출결 관리",
+      mobileLabel: "출결",
+      icon: CheckCircle2,
+    },
+    {
+      href: "/teacher/classes",
+      label: "반 관리",
+      mobileLabel: "반",
+      icon: Users,
+    },
     { href: "/teacher/notice", label: "공지", icon: Bell },
     { href: "/teacher/reports", label: "리포트 관리", icon: ClipboardList },
     { href: "/teacher/settings", label: "설정", icon: Settings },
@@ -110,7 +121,7 @@ function NavigationLink({
       className={cn(
         "flex items-center rounded-xl text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         compact
-          ? "flex-col gap-1 px-2 py-2 text-[0.6875rem]"
+          ? "w-full min-w-0 flex-col justify-center gap-0.5 overflow-hidden px-1 py-2 text-[0.625rem] min-[390px]:gap-1 min-[390px]:px-2 min-[390px]:text-[0.6875rem]"
           : "gap-3 px-3 py-2.5",
         active
           ? "bg-primary/10 text-primary"
@@ -118,7 +129,9 @@ function NavigationLink({
       )}
     >
       <Icon className={compact ? "size-5" : "size-4"} aria-hidden="true" />
-      <span>{item.label}</span>
+      <span className={compact ? "whitespace-nowrap leading-none" : undefined}>
+        {compact ? (item.mobileLabel ?? item.label) : item.label}
+      </span>
     </Link>
   );
 }
@@ -137,9 +150,11 @@ export function AppShell({
   const mobileItems = items.slice(0, 4);
   const overflowItems = items.slice(4);
   const isDashboard = pathname === items[0].href;
+  const isAttendancePage = pathname === `${items[0].href}/attendance`;
+  const usesAppPageLayout = isDashboard || isAttendancePage;
 
   return (
-    <div className="min-h-dvh bg-gray-50">
+    <div className="min-h-dvh w-full max-w-full min-w-0 overflow-x-clip bg-gray-50">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r bg-background/95 px-4 py-5 backdrop-blur md:flex md:flex-col">
         <Link href={items[0].href} className="flex items-center gap-3 px-2">
           <span className="flex size-10 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-sm">
@@ -184,9 +199,9 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className="md:pl-64">
+      <div className="w-full max-w-full min-w-0 md:pl-64">
         <header className="sticky top-0 z-20 border-b bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <div className="mx-auto flex h-16 w-full max-w-7xl min-w-0 items-center justify-between gap-4 px-4 sm:px-6">
             <div className="min-w-0">
               <h1 className="truncate font-semibold tracking-tight text-gray-900">
                 <span className="md:hidden">
@@ -245,10 +260,10 @@ export function AppShell({
           </div>
         </header>
 
-        <div className="mx-auto max-w-6xl px-4 py-5 pb-28 sm:px-6 md:py-8 md:pb-8">
+        <div className="mx-auto w-full max-w-7xl min-w-0 px-4 py-5 pb-28 sm:px-6 md:py-8 md:pb-8">
           <div
             className={cn(
-              isDashboard
+              usesAppPageLayout
                 ? ""
                 : "min-h-[calc(100dvh-8rem)] rounded-3xl border bg-card p-5 shadow-sm sm:p-7 [&>main]:text-xl [&>main]:font-semibold",
             )}
@@ -260,9 +275,9 @@ export function AppShell({
 
       <nav
         aria-label={`${copy.badge} 모바일 메뉴`}
-        className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1 backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 w-full border-t bg-background/95 px-2 pt-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden"
       >
-        <div className="mx-auto grid max-w-md grid-cols-5">
+        <div className="mx-auto grid w-full max-w-md grid-cols-[repeat(5,minmax(0,1fr))]">
           {mobileItems.map((item) => (
             <NavigationLink
               key={item.href}
@@ -277,7 +292,7 @@ export function AppShell({
               render={
                 <Button
                   variant="ghost"
-                  className="h-auto flex-col gap-1 rounded-xl px-2 py-2 text-[0.6875rem] text-muted-foreground"
+                  className="h-auto min-w-0 flex-col gap-0.5 rounded-xl px-1 py-2 text-[0.625rem] whitespace-nowrap text-muted-foreground min-[390px]:gap-1 min-[390px]:px-2 min-[390px]:text-[0.6875rem]"
                 />
               }
             >
