@@ -1,3 +1,5 @@
+import { UserScheduleView } from "@/components/schedule/user-schedule-view";
+
 export default function UserSchedulePage() {
-  return <main>일정</main>;
+  return <UserScheduleView />;
 }

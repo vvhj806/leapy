@@ -1,3 +1,5 @@
+import { TeacherClassList } from "@/components/classes/teacher-class-list";
+
 export default function TeacherClassesPage() {
-  return <main>반 관리</main>;
+  return <TeacherClassList />;
 }
