@@ -143,9 +143,11 @@ function EmptyState({ onReset }: { onReset: () => void }) {
 export function NoticeList({
   notices,
   role,
+  readScope,
 }: {
   notices: Notice[];
   role: NoticeRole;
+  readScope?: string;
 }) {
   const [query, setQuery] = useState("");
   const [userCategory, setUserCategory] = useState<UserCategory>("전체");
@@ -153,7 +155,7 @@ export function NoticeList({
   const [teacherClassId, setTeacherClassId] = useState("all");
   const readIdsSnapshot = useSyncExternalStore(
     subscribeToNoticeIds,
-    () => getNoticeIdsSnapshot(role),
+    () => getNoticeIdsSnapshot(role, readScope),
     getServerNoticeIdsSnapshot,
   );
   const readIds = useMemo(

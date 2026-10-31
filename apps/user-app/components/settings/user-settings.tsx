@@ -1,3 +1,5 @@
+"use client";
+
 import {
   CalendarDays,
   CheckCircle2,
@@ -6,6 +8,7 @@ import {
 } from "lucide-react";
 
 import { NotificationSettings } from "@/components/settings/notification-settings";
+import { useGuardian } from "@/components/guardian/guardian-provider";
 import {
   FaqList,
   InfoGrid,
@@ -14,7 +17,8 @@ import {
   SettingsSection,
   UnavailableSetting,
 } from "@/components/settings/settings-ui";
-import { userFaqs, userSettingsProfile } from "@/lib/mock/settings";
+import { userFaqs } from "@/lib/mock/settings";
+import { demoGuardian } from "@/lib/mock/guardians";
 import {
   defaultUserPreferences,
   type UserNotificationPreferences,
@@ -53,7 +57,7 @@ const notifications: ReadonlyArray<{
 ];
 
 export function UserSettings() {
-  const profile = userSettingsProfile;
+  const { selectedChild } = useGuardian();
   return (
     <main className="!text-base !font-normal">
       <div className="mx-auto max-w-5xl space-y-8">
@@ -67,23 +71,25 @@ export function UserSettings() {
         </header>
 
         <ProfileSummary
-          name={profile.name}
-          role={profile.role}
-          academy={profile.academyName}
-          details={`${profile.className} · ${profile.teacherName}`}
+          name={demoGuardian.displayName}
+          role={demoGuardian.role}
+          academy="Leapy 학부모 계정"
+          details={`연결된 자녀 2명 · 현재 ${selectedChild.name} 조회 중`}
         />
 
         <div className="grid items-start gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="space-y-8">
             <SettingsSection
-              title="소속 학원 정보"
-              description="소속 정보는 조회만 가능하며 변경할 수 없습니다."
+              title="선택한 자녀 정보"
+              description="자녀의 소속 정보는 조회만 가능하며 변경할 수 없습니다."
             >
               <InfoGrid
                 items={[
-                  ["학원", profile.academyName],
-                  ["소속 반", profile.className],
-                  ["담당 선생님", profile.teacherName],
+                  ["자녀", selectedChild.name],
+                  ["학년", selectedChild.grade],
+                  ["학원", selectedChild.academyName],
+                  ["소속 반", selectedChild.className],
+                  ["담당 선생님", selectedChild.teacherName],
                   ["연락처", "등록된 정보 없음"],
                 ]}
               />

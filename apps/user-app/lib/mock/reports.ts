@@ -238,11 +238,11 @@ export function getReportContext(report: LearningReport) {
   };
 }
 
-export function getUserReports() {
+export function getUserReports(studentId = demoStudentId) {
   return mockReports
     .filter(
       (report) =>
-        report.studentId === demoStudentId && report.status === "published",
+        report.studentId === studentId && report.status === "published",
     )
     .sort((first, second) => second.period.localeCompare(first.period));
 }

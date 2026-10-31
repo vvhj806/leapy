@@ -26,6 +26,7 @@ export type Notice = {
   category: NoticeCategory;
   audience: NoticeAudience;
   classIds?: string[];
+  studentIds?: string[];
   isImportant: boolean;
   isPinned: boolean;
   publishedAt: string;
@@ -357,6 +358,16 @@ export function getNoticesForRole(role: "user" | "teacher") {
         new Date(second.publishedAt).getTime() -
         new Date(first.publishedAt).getTime(),
     );
+}
+
+export function getNoticesForChild(classIds: string[], studentId: string) {
+  return getNoticesForRole("user").filter((notice) => {
+    const studentIds = notice.studentIds;
+    if (studentIds?.length) return studentIds.includes(studentId);
+    if (notice.classIds?.length)
+      return notice.classIds.some((classId) => classIds.includes(classId));
+    return true;
+  });
 }
 
 export function getClassNames(classIds?: string[]) {

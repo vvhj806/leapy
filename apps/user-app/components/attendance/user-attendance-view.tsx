@@ -8,10 +8,11 @@ import {
   AttendanceSummary,
 } from "@/components/attendance/attendance-ui";
 import { Button } from "@/components/ui/button";
+import { useGuardian } from "@/components/guardian/guardian-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   type AttendanceStatus,
-  userAttendanceRecords,
+  getChildAttendance,
 } from "@/lib/mock/attendance";
 
 const initialMonth = { year: 2026, month: 7 };
@@ -24,11 +25,12 @@ function getCounts(statuses: AttendanceStatus[]) {
 }
 
 export function UserAttendanceView() {
+  const { selectedChild } = useGuardian();
   const [selectedMonth, setSelectedMonth] = useState(initialMonth);
   const isInitialMonth =
     selectedMonth.year === initialMonth.year &&
     selectedMonth.month === initialMonth.month;
-  const records = isInitialMonth ? userAttendanceRecords : [];
+  const records = isInitialMonth ? getChildAttendance(selectedChild.id) : [];
   const counts = getCounts(records.map((record) => record.status));
 
   function moveMonth(offset: number) {
@@ -45,7 +47,7 @@ export function UserAttendanceView() {
           id="user-attendance-summary-heading"
           className="text-lg font-bold tracking-tight text-gray-900"
         >
-          이번 달 출결 요약
+          {selectedChild.name}의 이번 달 출결 요약
         </h2>
         <div className="mt-3">
           <AttendanceSummary counts={counts} />

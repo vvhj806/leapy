@@ -134,6 +134,30 @@ export const userAttendanceRecords: UserAttendanceRecord[] = [
   },
 ];
 
+const secondChildAttendanceRecords: UserAttendanceRecord[] =
+  userAttendanceRecords.slice(0, 7).map((record, index) => ({
+    ...record,
+    id: `student-13-attendance-${index + 1}`,
+    subject: "중등 수학",
+    className: "중등 수학 B반",
+    startTime: "오후 5:00",
+    endTime: "오후 6:30",
+    status: index === 2 ? "absent" : index === 4 ? "late" : "present",
+    checkInTime: index === 2 ? null : index === 4 ? "오후 5:07" : "오후 4:52",
+    note:
+      index === 2
+        ? "보호자 확인 결석"
+        : index === 4
+          ? "수업 시작 후 7분 입실"
+          : undefined,
+  }));
+
+export function getChildAttendance(studentId: string) {
+  if (studentId === "student-1") return userAttendanceRecords;
+  if (studentId === "student-13") return secondChildAttendanceRecords;
+  return [];
+}
+
 export const teacherAttendanceClasses: TeacherAttendanceClass[] = [
   {
     id: "middle-math-a",
@@ -145,7 +169,7 @@ export const teacherAttendanceClasses: TeacherAttendanceClass[] = [
     students: [
       {
         id: "student-1",
-        name: "김민준",
+        name: "김리피",
         status: "present",
         checkInTime: "오후 2:21",
       },
@@ -227,7 +251,7 @@ export const teacherAttendanceClasses: TeacherAttendanceClass[] = [
     students: [
       {
         id: "student-13",
-        name: "김도현",
+        name: "김리니",
         status: "present",
         checkInTime: "오후 4:51",
       },

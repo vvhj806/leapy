@@ -2,15 +2,19 @@ export type NoticeRole = "user" | "teacher";
 
 const NOTICE_READ_EVENT = "leapy:notice-read-state-change";
 
-export function getNoticeStorageKey(role: NoticeRole) {
-  return `leapy:${role}:read-notice-ids`;
+export function getNoticeStorageKey(role: NoticeRole, scopeId?: string) {
+  return scopeId
+    ? `leapy:${role}:${scopeId}:read-notice-ids:v1`
+    : `leapy:${role}:read-notice-ids`;
 }
 
-export function getNoticeIdsSnapshot(role: NoticeRole) {
+export function getNoticeIdsSnapshot(role: NoticeRole, scopeId?: string) {
   if (typeof window === "undefined") return "[]";
 
   try {
-    return window.localStorage.getItem(getNoticeStorageKey(role)) ?? "[]";
+    return (
+      window.localStorage.getItem(getNoticeStorageKey(role, scopeId)) ?? "[]"
+    );
   } catch {
     return "[]";
   }
@@ -36,8 +40,8 @@ export function parseNoticeIds(snapshot: string) {
   }
 }
 
-export function readNoticeIds(role: NoticeRole) {
-  return parseNoticeIds(getNoticeIdsSnapshot(role));
+export function readNoticeIds(role: NoticeRole, scopeId?: string) {
+  return parseNoticeIds(getNoticeIdsSnapshot(role, scopeId));
 }
 
 export function subscribeToNoticeIds(onStoreChange: () => void) {
@@ -52,11 +56,15 @@ export function subscribeToNoticeIds(onStoreChange: () => void) {
   };
 }
 
-export function saveNoticeIds(role: NoticeRole, ids: Set<string>) {
+export function saveNoticeIds(
+  role: NoticeRole,
+  ids: Set<string>,
+  scopeId?: string,
+) {
   if (typeof window === "undefined") return;
 
   window.localStorage.setItem(
-    getNoticeStorageKey(role),
+    getNoticeStorageKey(role, scopeId),
     JSON.stringify(Array.from(ids)),
   );
   window.dispatchEvent(new Event(NOTICE_READ_EVENT));

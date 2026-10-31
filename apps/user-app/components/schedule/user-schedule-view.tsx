@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { ScheduleStatusBadge } from "@/components/schedule/schedule-ui";
+import { useGuardian } from "@/components/guardian/guardian-provider";
 import { Button } from "@/components/ui/button";
 import {
   addDays,
@@ -151,7 +152,11 @@ function SessionList({
 }
 
 export function UserScheduleView() {
-  const sessions = useMemo(() => getUserSessions(), []);
+  const { selectedChild } = useGuardian();
+  const sessions = useMemo(
+    () => getUserSessions(selectedChild.classIds),
+    [selectedChild.classIds],
+  );
   const [mode, setMode] = useState<CalendarMode>("week");
   const [selectedDate, setSelectedDate] = useState(scheduleDemoToday);
   const [cursorDate, setCursorDate] = useState(() =>

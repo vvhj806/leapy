@@ -1,6 +1,5 @@
-import { UserReportView } from "@/components/reports/user-report-view";
-import { getUserReports } from "@/lib/mock/reports";
+import { GuardianReportList } from "@/components/reports/guardian-reports";
 
 export default function UserReportPage() {
-  return <UserReportView reports={getUserReports()} />;
+  return <GuardianReportList />;
 }

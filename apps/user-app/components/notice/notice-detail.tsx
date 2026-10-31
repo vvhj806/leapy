@@ -20,19 +20,21 @@ import {
 export function NoticeDetail({
   notice,
   role,
+  readScope,
 }: {
   notice: Notice;
   role: NoticeRole;
+  readScope?: string;
 }) {
   const classNames = getClassNames(notice.classIds);
 
   useEffect(() => {
-    const readIds = readNoticeIds(role);
+    const readIds = readNoticeIds(role, readScope);
     if (readIds.has(notice.id)) return;
 
     readIds.add(notice.id);
-    saveNoticeIds(role, readIds);
-  }, [notice.id, role]);
+    saveNoticeIds(role, readIds, readScope);
+  }, [notice.id, readScope, role]);
 
   return (
     <main className="!text-base !font-normal">

@@ -214,9 +214,9 @@ export function getSessionsForClass(classId: string) {
     .sort(compareSessions);
 }
 
-export function getUserSessions() {
+export function getUserSessions(classIds: string[] = ["middle-math-a"]) {
   return classSessions
-    .filter((session) => session.userVisible)
+    .filter((session) => classIds.includes(session.classId))
     .sort(compareSessions);
 }
 

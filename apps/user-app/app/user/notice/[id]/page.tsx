@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { NoticeDetail } from "@/components/notice/notice-detail";
+import { GuardianNoticeDetail } from "@/components/notice/guardian-notices";
 import { canViewNotice, getNoticeById, notices } from "@/lib/mock/notices";
 
 export function generateStaticParams() {
@@ -17,5 +17,5 @@ export default async function UserNoticeDetailPage({
 
   if (!notice || !canViewNotice(notice, "user")) notFound();
 
-  return <NoticeDetail notice={notice} role="user" />;
+  return <GuardianNoticeDetail notice={notice} />;
 }

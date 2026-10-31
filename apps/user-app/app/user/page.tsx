@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   Bell,
@@ -21,7 +23,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { userDashboardMock as dashboard } from "@/lib/mock/dashboard";
+import { useGuardian } from "@/components/guardian/guardian-provider";
+import { userDashboardMock as baseDashboard } from "@/lib/mock/dashboard";
+import { getChildAttendance } from "@/lib/mock/attendance";
+import { getNoticesForChild, formatNoticeDate } from "@/lib/mock/notices";
+import { getUserReports, getProgressRate } from "@/lib/mock/reports";
+import {
+  getUserSessions,
+  getSessionClass,
+  formatScheduleDate,
+} from "@/lib/mock/schedule";
 
 const quickActions = [
   { label: "출결", href: "/user/attendance", icon: CheckCircle2 },
@@ -31,14 +42,75 @@ const quickActions = [
 ] as const;
 
 export default function UserPage() {
+  const { selectedChild } = useGuardian();
+  const attendance = getChildAttendance(selectedChild.id);
+  const latestAttendance = attendance[0];
+  const sessions = getUserSessions(selectedChild.classIds).filter(
+    (session) => session.date >= "2026-10-31",
+  );
+  const notices = getNoticesForChild(
+    selectedChild.classIds,
+    selectedChild.id,
+  ).slice(0, 3);
+  const reports = getUserReports(selectedChild.id);
+  const latestReport = reports[0];
+  const nextSession =
+    sessions.find((session) => session.status !== "canceled") ?? sessions[0];
+  const nextClass = nextSession ? getSessionClass(nextSession) : undefined;
+  const dashboard = {
+    ...baseDashboard,
+    displayName: selectedChild.name,
+    attendance: {
+      status:
+        latestAttendance?.status === "late"
+          ? "지각"
+          : latestAttendance?.status === "absent"
+            ? "결석"
+            : "출석 완료",
+      checkedAt: latestAttendance?.checkInTime ?? "확인 중",
+    },
+    todayClass: {
+      subject: nextClass?.name ?? selectedChild.className,
+      time: nextSession
+        ? `${nextSession.startTime} - ${nextSession.endTime}`
+        : "예정 없음",
+      teacher: selectedChild.teacherName,
+      location: nextSession?.room ?? "등록된 정보 없음",
+    },
+    schedules: sessions.slice(0, 3).map((session) => ({
+      id: session.id,
+      date: formatScheduleDate(session.date),
+      title: getSessionClass(session)?.name ?? "수업",
+      detail: `${session.startTime} · ${session.room}`,
+    })),
+    notices: notices.map((notice) => ({
+      title: notice.title,
+      date: formatNoticeDate(notice.publishedAt),
+      important: notice.isImportant,
+      unread: true,
+    })),
+    report: latestReport
+      ? {
+          title: latestReport.title,
+          period: latestReport.period,
+          progress: getProgressRate(latestReport) ?? 0,
+          comment: latestReport.summary,
+        }
+      : {
+          title: "발행된 리포트가 없어요",
+          period: "",
+          progress: 0,
+          comment: "새 리포트가 발행되면 이곳에 표시됩니다.",
+        },
+  };
   return (
     <main className="w-full max-w-full min-w-0 space-y-8">
       <h1 className="sr-only">학생·학부모 대시보드</h1>
 
       <ProfileSummary
         name={dashboard.displayName}
-        role="학생 · 학부모"
-        initials="사용"
+        role="조회 중인 자녀"
+        initials={selectedChild.name.slice(0, 1)}
         summary={`오늘은 ${dashboard.todayClass.subject} 수업이 있어요 · ${dashboard.attendance.status}`}
       />
 
@@ -125,7 +197,7 @@ export default function UserPage() {
           >
             {dashboard.schedules.map((schedule, index) => (
               <Link
-                key={schedule.title}
+                key={schedule.id}
                 href="/user/schedule"
                 className="w-auto max-w-none basis-[82%] shrink-0 snap-start rounded-2xl border border-gray-100 bg-white p-4 shadow-[0_8px_24px_rgba(17,24,39,0.04)] transition hover:border-primary-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 lg:basis-auto"
               >

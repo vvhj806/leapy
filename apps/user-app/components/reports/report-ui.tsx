@@ -12,6 +12,7 @@ import {
   type UnitStatus,
 } from "@/lib/mock/reports";
 import { cn } from "@/lib/utils";
+import { getReportAnalytics } from "@/lib/mock/report-analytics";
 
 export function ReportStatusBadge({
   status,
@@ -48,10 +49,7 @@ export function ReportContent({
   report: LearningReport;
   preview?: boolean;
 }) {
-  if (
-    report.status === "published" &&
-    report.id.startsWith("report-student-1-")
-  ) {
+  if (report.status === "published" && getReportAnalytics(report.id)) {
     return <PremiumReport report={report} preview={preview} />;
   }
   const { student, academyClass } = getReportContext(report);

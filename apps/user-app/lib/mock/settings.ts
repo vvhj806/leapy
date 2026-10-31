@@ -6,15 +6,6 @@ import {
 
 export const academyName = "Leapy 학원";
 
-export const userSettingsProfile = {
-  id: "student-1",
-  name: "김민준",
-  role: "학생",
-  academyName,
-  className: "중등 수학 A반",
-  teacherName: "김선생 선생님",
-} as const;
-
 export const teacherSettingsProfile = {
   id: "teacher-kim",
   name: "김선생 선생님",
