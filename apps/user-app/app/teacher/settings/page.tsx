@@ -1,3 +1,5 @@
+import { TeacherSettings } from "@/components/settings/teacher-settings";
+
 export default function TeacherSettingsPage() {
-  return <main>설정</main>;
+  return <TeacherSettings />;
 }
