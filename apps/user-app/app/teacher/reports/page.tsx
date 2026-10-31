@@ -1,3 +1,5 @@
+import { TeacherReportList } from "@/components/reports/teacher-report-list";
+
 export default function TeacherReportsPage() {
-  return <main>리포트 관리</main>;
+  return <TeacherReportList />;
 }
