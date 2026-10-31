@@ -1,5 +1,6 @@
 import { CheckCircle2, Circle, Clock3 } from "lucide-react";
 
+import { PremiumReport } from "@/components/reports/premium-report";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -47,6 +48,12 @@ export function ReportContent({
   report: LearningReport;
   preview?: boolean;
 }) {
+  if (
+    report.status === "published" &&
+    report.id.startsWith("report-student-1-")
+  ) {
+    return <PremiumReport report={report} preview={preview} />;
+  }
   const { student, academyClass } = getReportContext(report);
   const progressRate = getProgressRate(report);
   return (

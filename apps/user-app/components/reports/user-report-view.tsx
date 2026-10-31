@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import {
   ArrowRight,
   BookOpen,
+  ChevronLeft,
   ChevronRight,
   ClipboardList,
 } from "lucide-react";
@@ -16,6 +20,7 @@ import {
 } from "@/lib/mock/reports";
 
 export function UserReportView({ reports }: { reports: LearningReport[] }) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   if (!reports.length)
     return (
       <main className="!text-base !font-normal">
@@ -28,7 +33,7 @@ export function UserReportView({ reports }: { reports: LearningReport[] }) {
         </div>
       </main>
     );
-  const latest = reports[0];
+  const latest = reports[selectedIndex];
   const context = getReportContext(latest);
   const progress = getProgressRate(latest);
   const assessment = latest.assessments.find(
@@ -44,9 +49,35 @@ export function UserReportView({ reports }: { reports: LearningReport[] }) {
           <p className="mt-1 text-sm leading-6 text-gray-500">
             학습 과정과 성장 기록을 확인하세요.
           </p>
-          <p className="mt-2 text-xs font-semibold text-primary-700">
-            {formatReportPeriod(latest.period)} 학습 리포트
-          </p>
+          <div className="mt-3 inline-flex items-center rounded-xl border border-gray-200 bg-white p-1">
+            <button
+              type="button"
+              aria-label="이전 월 리포트"
+              disabled={selectedIndex >= reports.length - 1}
+              onClick={() =>
+                setSelectedIndex((index) =>
+                  Math.min(reports.length - 1, index + 1),
+                )
+              }
+              className="flex size-10 items-center justify-center rounded-lg text-gray-600 disabled:opacity-30"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+            <p className="min-w-36 text-center text-sm font-bold text-primary-700">
+              {formatReportPeriod(latest.period)}
+            </p>
+            <button
+              type="button"
+              aria-label="다음 월 리포트"
+              disabled={selectedIndex === 0}
+              onClick={() =>
+                setSelectedIndex((index) => Math.max(0, index - 1))
+              }
+              className="flex size-10 items-center justify-center rounded-lg text-gray-600 disabled:opacity-30"
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          </div>
         </header>
         <section
           aria-labelledby="latest-report-heading"

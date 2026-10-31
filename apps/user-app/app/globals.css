@@ -68,6 +68,30 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@page {
+  size: A4 portrait;
+  margin: 14mm;
+}
+
+@media print {
+  aside,
+  header.sticky,
+  nav,
+  .report-actions {
+    display: none !important;
+  }
+  body,
+  .premium-report {
+    background: white !important;
+  }
+  .premium-report > section,
+  .premium-report > header,
+  figure {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}
+
 :root {
   --font-pretendard:
     "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
